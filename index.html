@@ -450,15 +450,14 @@ const addSaleHandler = () => {
   // Use Retail Price as default calculation value
   const productOptions = productList.map(p => ({
     value: p.id, 
-    text: `${p.name} (Retail: ₵${p.retailPrice || p.price})`
+    text: `${p.name} (Retail: ₵${p.retailPrice || 0} | wholesale:  ₵${p.wholesalePrice || 0})`
   }));
   productOptions.unshift({ value: '', text: '--- Select Product ---' });
 
-  // Add an option to select the price type (Retail/Wholesale)
-  const priceTypeOptions = [
-    { value: 'retail', text: 'Retail Price' },
-    { value: 'wholesale', text: 'Wholesale Price' }
-  ];
+const priceTypeOptions = [
+        { value: 'retail', text: 'Retail Price' },
+        { value: 'wholesale', text: 'Wholesale Price' }
+    ];
 
   openModal("Record New Sale", [
     {id:"productID", placeholder:"Select Product", tag:"select", options: productOptions, required: true },
@@ -466,35 +465,41 @@ const addSaleHandler = () => {
     {id:"quantity", placeholder:"Quantity Sold", type:"number", required: true, defaultValue: 1}, 
     {id:"amount", placeholder:"Total Amount (₵) (Optional - Calculated)", type:"number"}
   ], async (vals) => {
-    try {
+    // --- START Validation and Calculation ---
         const product = productList.find(p => p.id === vals.productID);
         const quantity = parseInt(vals.quantity || 1);
         const priceType = vals.priceType;
         
-        if (!product || quantity <= 0) {
-            throw new Error("Invalid product selection or quantity.");
-        }
-        
+       if (!product) throw new Error("Please select a valid product.");
+        if (isNaN(quantity) || quantity <= 0) throw new Error("Quantity must be a positive number.");
+      
         // Determine the price based on selection
         let unitPrice;
         if (priceType === 'wholesale') {
-            unitPrice = product.wholesalePrice || product.retailPrice; 
-        } else { // Default to retail
-            unitPrice = product.retailPrice || product.price; 
+            unitPrice = parseFloat(product.wholesalePrice || 0);
+        } else {
+            unitPrice = parseFloat(product.retailPrice || 0);
         }
 
-        if (!unitPrice) {
-             throw new Error("Product price information is missing. Check Inventory.");
+        if (unitPrice <= 0) throw new Error(`Unit price (₵${unitPrice}) is invalid. Check Inventory.`);
+        
+        let amount = parseFloat(vals.amount);
+        if (isNaN(amount) || amount <= 0) {
+             amount = unitPrice * quantity; 
         }
 
-        const amount = parseFloat(vals.amount || (unitPrice * quantity));
-
+        if (amount <= 0) throw new Error("Sale amount must be positive.");
+        // --- END Validation and Calculation ---
+      
         await runTransaction(db, async (transaction) => {
           const productRef = doc(db, "products", vals.productID);
           const productDoc = await transaction.get(productRef);
+            
           if (!productDoc.exists()) throw new Error(`Product '${product.name}' does not exist!`);
           
-          const newStock = productDoc.data().stock - quantity;
+          const currentStock = productDoc.data().stock || 0;
+          const newStock = currentStock - quantity;  
+            
           if (newStock < 0) throw new Error(`Insufficient stock for ${product.name}! Stock remaining: ${productDoc.data().stock}`);
           
           transaction.update(productRef, { stock: newStock });
@@ -555,26 +560,47 @@ const addExpenseHandler = () => openModal("Record New Expense", [
 document.getElementById("addExpenseBtn").addEventListener("click", addExpenseHandler);
 document.getElementById("addExpenseBtnSection").addEventListener("click", addExpenseHandler);
 
-// 3. Add/Update Product (Inventory)
-const addUpdateProductHandler = () => openModal("Add/Update Product", [
-  {id:"productName", placeholder:"Product Name", required: true},
-  {id:"retailPrice", placeholder:"Retail Price (₵)", type:"number", required: true},
-  {id:"wholesalePrice", placeholder:"Wholesale Price (₵)", type:"number", required: true},
-  {id:"stock", placeholder:"Current Stock Quantity", type:"number", required: true},
-  {id:"alertThreshold", placeholder:"Low Stock Threshold", type:"number", required: true, defaultValue: 10}
-], async (vals) => {
-    if(vals.productName) {
-        await addDoc(collection(db, "products"), {
-            name: vals.productName,
-            retailPrice: parseFloat(vals.retailPrice || 0),
-            wholesalePrice: parseFloat(vals.wholesalePrice || 0),
-            stock: parseInt(vals.stock || 0),
-            alertThreshold: parseInt(vals.alertThreshold || 10),
-            dateAdded: new Date()
-        });
-        loadInventory();
-    }
-});
+// 3. Add/Update Product (Inventory) (Simplified Flow)
+const addUpdateProductHandler = () =>
+    openModal("Add/Update Product", [
+        { id: "productName", placeholder: "Product Name", required: true },
+        { id: "retailPrice", placeholder: "Retail Price (₵)", type: "number", required: true },
+        { id: "wholesalePrice", placeholder: "Wholesale Price (₵)", type: "number", required: true },
+        { id: "stock", placeholder: "Current Stock Quantity", type: "number", required: true },
+        { id: "alertThreshold", placeholder: "Low Stock Threshold", type: "number", required: true, defaultValue: 10 }
+    ], async (vals) => {
+        // Parse values once
+        const retailPrice = parseFloat(vals.retailPrice);
+        const wholesalePrice = parseFloat(vals.wholesalePrice);
+        const stock = parseInt(vals.stock);
+        const alertThreshold = parseInt(vals.alertThreshold);
+
+        // Single, comprehensive check (similar to checking for name and category)
+        if (
+            vals.productName && 
+            !isNaN(retailPrice) && retailPrice >= 0 &&
+            !isNaN(wholesalePrice) && wholesalePrice >= 0 &&
+            !isNaN(stock) && stock >= 0 &&
+            !isNaN(alertThreshold) && alertThreshold >= 0
+        ) {
+            // Success: Perform the addDoc (similar to addContactHandler)
+            await addDoc(collection(db, "products"), {
+                name: vals.productName,
+                retailPrice: retailPrice,
+                wholesalePrice: wholesalePrice,
+                stock: stock,
+                alertThreshold: alertThreshold,
+                dateAdded: new Date()
+            });
+            
+            // Refresh UI (similar to calling loadContacts)
+            loadInventory(); 
+            loadDashboard();
+        } else {
+            // Failure: Throw an explicit error
+            throw new Error("Please ensure the Product Name is filled and all price/quantity fields contain valid non-negative numbers.");
+        }
+    });
 
 document.getElementById("addInventoryBtn").addEventListener("click", addUpdateProductHandler);
 
