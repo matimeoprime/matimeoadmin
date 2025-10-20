@@ -440,86 +440,80 @@ async function deleteDocument(collectionName, docId) {
 
 // --- Data Input Functions ---
 
-// 1. Add Sale (Responsive & Fully Functional)
+// 1. Add Sale 
 const addSaleHandler = () => {
   if (productList.length === 0) {
     alert("No products available. Please add a product first via Inventory.");
     return;
   }
-
-  // Prepare product options dynamically
+  
+  // Use Retail Price as default calculation value
   const productOptions = productList.map(p => ({
-    value: p.id,
-    text: `${p.name} (Retail: ₵${p.retailPrice || 0} | Wholesale: ₵${p.wholesalePrice || 0})`
+    value: p.id, 
+    text: `${p.name} (Retail: ₵${p.retailPrice || p.price})`
   }));
   productOptions.unshift({ value: '', text: '--- Select Product ---' });
 
+  // Add an option to select the price type (Retail/Wholesale)
   const priceTypeOptions = [
     { value: 'retail', text: 'Retail Price' },
     { value: 'wholesale', text: 'Wholesale Price' }
   ];
 
   openModal("Record New Sale", [
-    { id: "productID", placeholder: "Select Product", tag: "select", options: productOptions, required: true },
-    { id: "priceType", placeholder: "Price Type", tag: "select", options: priceTypeOptions, defaultValue: 'retail', required: true },
-    { id: "quantity", placeholder: "Quantity Sold", type: "number", required: true, defaultValue: 1 },
-    { id: "amount", placeholder: "Total Amount (₵) (Optional - Auto Calculated)", type: "number" }
-  ], async (vals, closeModal) => {
+    {id:"productID", placeholder:"Select Product", tag:"select", options: productOptions, required: true },
+    {id:"priceType", placeholder:"Price Type", tag:"select", options: priceTypeOptions, defaultValue: 'retail', required: true },
+    {id:"quantity", placeholder:"Quantity Sold", type:"number", required: true, defaultValue: 1}, 
+    {id:"amount", placeholder:"Total Amount (₵) (Optional - Calculated)", type:"number"}
+  ], async (vals) => {
     try {
-      const product = productList.find(p => p.id === vals.productID);
-      const quantity = parseInt(vals.quantity);
-      const priceType = vals.priceType;
+        const product = productList.find(p => p.id === vals.productID);
+        const quantity = parseInt(vals.quantity || 1);
+        const priceType = vals.priceType;
+        
+        if (!product || quantity <= 0) {
+            throw new Error("Invalid product selection or quantity.");
+        }
+        
+        // Determine the price based on selection
+        let unitPrice;
+        if (priceType === 'wholesale') {
+            unitPrice = product.wholesalePrice || product.retailPrice; 
+        } else { // Default to retail
+            unitPrice = product.retailPrice || product.price; 
+        }
 
-      if (!product) throw new Error("Please select a valid product.");
-      if (isNaN(quantity) || quantity <= 0) throw new Error("Quantity must be a positive number.");
+        if (!unitPrice) {
+             throw new Error("Product price information is missing. Check Inventory.");
+        }
 
-      // Determine price
-      const unitPrice = priceType === 'wholesale'
-        ? parseFloat(product.wholesalePrice || 0)
-        : parseFloat(product.retailPrice || 0);
+        const amount = parseFloat(vals.amount || (unitPrice * quantity));
 
-      if (unitPrice <= 0)
-        throw new Error(`Invalid ${priceType} price (₵${unitPrice}) for ${product.name}. Check inventory.`);
-
-      // Compute total amount
-      let amount = parseFloat(vals.amount);
-      if (isNaN(amount) || amount <= 0) amount = unitPrice * quantity;
-      if (amount <= 0) throw new Error("Calculated sale amount must be positive.");
-
-      // Firestore Transaction
-      await runTransaction(db, async (transaction) => {
-        const productRef = doc(db, "products", vals.productID);
-        const productDoc = await transaction.get(productRef);
-        if (!productDoc.exists()) throw new Error(`${product.name} no longer exists in the database.`);
-
-        const currentStock = productDoc.data().stock || 0;
-        const newStock = currentStock - quantity;
-        if (newStock < 0)
-          throw new Error(`Insufficient stock for ${product.name}. Available: ${currentStock}`);
-
-        // Update stock and record sale
-        transaction.update(productRef, { stock: newStock });
-        transaction.set(doc(collection(db, "sales")), {
-          productID: vals.productID,
-          product: product.name,
-          priceType,
-          unitPrice,
-          quantity,
-          amount: parseFloat(amount.toFixed(2)),
-          date: new Date()
+        await runTransaction(db, async (transaction) => {
+          const productRef = doc(db, "products", vals.productID);
+          const productDoc = await transaction.get(productRef);
+          if (!productDoc.exists()) throw new Error(`Product '${product.name}' does not exist!`);
+          
+          const newStock = productDoc.data().stock - quantity;
+          if (newStock < 0) throw new Error(`Insufficient stock for ${product.name}! Stock remaining: ${productDoc.data().stock}`);
+          
+          transaction.update(productRef, { stock: newStock });
+          
+          transaction.set(doc(collection(db, "sales")), { 
+             productID: vals.productID,
+             product: product.name,
+             amount: amount,
+             quantity: quantity,
+             priceType: priceType, 
+             unitPrice: unitPrice,
+             date: new Date()
+          });
         });
-      });
 
-      // Refresh UI
-      if (sections.sales.style.display === 'block') loadSalesList();
-      if (sections.inventory.style.display === 'block') loadInventory();
-
-      alert(`✅ Sale for ${product.name} recorded successfully.`);
-      closeModal(); // ✅ Close modal after success
-
-    } catch (e) {
-      console.error("Error adding sale:", e);
-      alert(`⚠️ ${e.message || "An error occurred while saving the sale."}`);
+        if (sections.sales.style.display === 'block') loadSalesList();
+    } catch(e) { 
+        console.error("Error adding sale or updating stock: ", e); 
+        throw new Error(`Error processing sale. Details: ${e.message || e}`); 
     }
   });
 };
@@ -561,145 +555,26 @@ const addExpenseHandler = () => openModal("Record New Expense", [
 document.getElementById("addExpenseBtn").addEventListener("click", addExpenseHandler);
 document.getElementById("addExpenseBtnSection").addEventListener("click", addExpenseHandler);
 
-// ==========================
-//  INVENTORY ADD/UPDATE PRODUCT HANDLER
-// ==========================
-
-// Ensure the modal system exists
-function openModal(title, fields, onSubmit) {
-  const modal = document.getElementById("modal");
-  const modalTitle = document.getElementById("modalTitle");
-  const modalForm = document.getElementById("modalForm");
-  const submitBtn = document.getElementById("submitModal");
-  const closeBtn = document.getElementById("closeModal");
-
-  modalTitle.textContent = title;
-  modalForm.innerHTML = "";
-
-  // Build fields dynamically
-  fields.forEach(f => {
-    const wrapper = document.createElement("div");
-    wrapper.className = "mb-2";
-    let input;
-
-    if (f.type === "select") {
-      input = document.createElement("select");
-      (f.options || []).forEach(opt => {
-        const option = document.createElement("option");
-        option.value = opt;
-        option.textContent = opt;
-        input.appendChild(option);
-      });
-    } else {
-      input = document.createElement("input");
-      input.type = f.type || "text";
-      input.placeholder = f.placeholder || "";
-      if (f.defaultValue !== undefined) input.value = f.defaultValue;
+// 3. Add/Update Product (Inventory)
+const addUpdateProductHandler = () => openModal("Add/Update Product", [
+  {id:"productName", placeholder:"Product Name", required: true},
+  {id:"retailPrice", placeholder:"Retail Price (₵)", type:"number", required: true},
+  {id:"wholesalePrice", placeholder:"Wholesale Price (₵)", type:"number", required: true},
+  {id:"stock", placeholder:"Current Stock Quantity", type:"number", required: true},
+  {id:"alertThreshold", placeholder:"Low Stock Threshold", type:"number", required: true, defaultValue: 10}
+], async (vals) => {
+    if(vals.productName) {
+        await addDoc(collection(db, "products"), {
+            name: vals.productName,
+            retailPrice: parseFloat(vals.retailPrice || 0),
+            wholesalePrice: parseFloat(vals.wholesalePrice || 0),
+            stock: parseInt(vals.stock || 0),
+            alertThreshold: parseInt(vals.alertThreshold || 10),
+            dateAdded: new Date()
+        });
+        loadInventory();
     }
-
-    input.id = f.id;
-    input.className = "w-full border border-gray-300 rounded p-2 focus:ring-2 focus:ring-yellow-400";
-    if (f.required) input.required = true;
-    wrapper.appendChild(input);
-    modalForm.appendChild(wrapper);
-  });
-
-  // Show modal
-  modal.classList.remove("hidden");
-  modal.style.display = "flex";
-
-  // Handle submit
-  submitBtn.onclick = async (e) => {
-    e.preventDefault();
-    const vals = {};
-    fields.forEach(f => vals[f.id] = document.getElementById(f.id).value.trim());
-
-    try {
-      await onSubmit(vals);
-      alert("✅ Successfully submitted!");
-      modal.classList.add("hidden");
-      modal.style.display = "none";
-    } catch (err) {
-      console.error(err);
-      alert("❌ " + err.message);
-    }
-  };
-
-  // Close modal
-  closeBtn.onclick = () => {
-    modal.classList.add("hidden");
-    modal.style.display = "none";
-  };
-}
-
-// ==========================
-//  ADD/UPDATE PRODUCT LOGIC
-// ==========================
-
-const addUpdateProductHandler = () =>
-  openModal("Add/Update Product", [
-    { id: "productName", placeholder: "Product Name", required: true },
-    { id: "retailPrice", placeholder: "Retail Price (₵)", type: "number", required: true },
-    { id: "wholesalePrice", placeholder: "Wholesale Price (₵)", type: "number", required: true },
-    { id: "stock", placeholder: "Current Stock Quantity", type: "number", required: true },
-    { id: "alertThreshold", placeholder: "Low Stock Threshold", type: "number", required: true, defaultValue: 10 }
-  ], async (vals) => {
-
-    const retailPrice = parseFloat(vals.retailPrice);
-    const wholesalePrice = parseFloat(vals.wholesalePrice);
-    const stock = parseInt(vals.stock);
-    const alertThreshold = parseInt(vals.alertThreshold);
-
-    // Validation
-    if (
-      vals.productName &&
-      !isNaN(retailPrice) && retailPrice >= 0 &&
-      !isNaN(wholesalePrice) && wholesalePrice >= 0 &&
-      !isNaN(stock) && stock >= 0 &&
-      !isNaN(alertThreshold) && alertThreshold >= 0
-    ) {
-      // Add to Firestore
-      await addDoc(collection(db, "products"), {
-        name: vals.productName,
-        retailPrice,
-        wholesalePrice,
-        stock,
-        alertThreshold,
-        dateAdded: new Date()
-      });
-
-      // Refresh inventory immediately
-      await loadInventory();
-    } else {
-      throw new Error("Please fill all fields correctly with valid non-negative numbers.");
-    }
-  });
-
-// Bind to inventory button
-document.getElementById("addInventoryBtn").onclick = addUpdateProductHandler;
-document.getElementById("quickAddProductBtn")?.addEventListener("click", addUpdateProductHandler);
-
-// ==========================
-//  LOAD INVENTORY TABLE
-// ==========================
-async function loadInventory() {
-  const table = document.getElementById("inventoryTable");
-  table.innerHTML = "";
-  const snapshot = await getDocs(collection(db, "products"));
-  snapshot.forEach(doc => {
-    const p = doc.data();
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td class="p-2">${p.name}</td>
-      <td class="p-2">₵${p.retailPrice.toFixed(2)}</td>
-      <td class="p-2">${p.stock}</td>
-      <td class="p-2">${p.alertThreshold}</td>
-    `;
-    if (p.stock <= p.alertThreshold) tr.classList.add("bg-red-100");
-    table.appendChild(tr);
-  });
-}
-
+});
 
 document.getElementById("addInventoryBtn").addEventListener("click", addUpdateProductHandler);
 
@@ -865,44 +740,10 @@ async function loadData(){
     document.getElementById("stockMobile").innerText = lowStockCount;
 
 
-    // 3. Add/Update Product (Inventory)
-const addUpdateProductHandler = () =>
-    openModal("Add/Update Product", [
-        { id: "productName", placeholder: "Product Name", required: true },
-        { id: "retailPrice", placeholder: "Retail Price (₵)", type: "number", required: true },
-        { id: "wholesalePrice", placeholder: "Wholesale Price (₵)", type: "number", required: true },
-        { id: "stock", placeholder: "Current Stock Quantity", type: "number", required: true },
-        { id: "alertThreshold", placeholder: "Low Stock Threshold", type: "number", required: true, defaultValue: 10 }
-    ], async (vals) => {
-        // Robust Validation Check for Inventory
-        const retailPrice = parseFloat(vals.retailPrice);
-        const wholesalePrice = parseFloat(vals.wholesalePrice);
-        const stock = parseInt(vals.stock);
-        const alertThreshold = parseInt(vals.alertThreshold);
+    // 3. Prepare Top Products List & Chart Data
+    const top = Object.entries(productTotals).sort((a,b) => b[1] - a[1]).slice(0, 5);
+    renderTopProductsList(top);
 
-        // Check for product name presence and valid non-negative numbers for all fields
-        if (
-            vals.productName && 
-            !isNaN(retailPrice) && retailPrice >= 0 &&
-            !isNaN(wholesalePrice) && wholesalePrice >= 0 &&
-            !isNaN(stock) && stock >= 0 &&
-            !isNaN(alertThreshold) && alertThreshold >= 0
-        ) {
-            await addDoc(collection(db, "products"), {
-                name: vals.productName,
-                retailPrice: retailPrice,
-                wholesalePrice: wholesalePrice,
-                stock: stock,
-                alertThreshold: alertThreshold,
-                dateAdded: new Date()
-            });
-            // Refresh Inventory list immediately
-            loadInventory();
-        } else {
-            // Throw explicit error if validation fails
-            throw new Error("Please ensure the Product Name is filled and all price/quantity fields contain valid non-negative numbers.");
-        }
-    });
 
     // 4. Prepare Chart Data
     const sortedDates = Object.keys(dailySales).sort();
@@ -1166,4 +1007,3 @@ loadData();
 </script>
 </body>
 </html>
-
