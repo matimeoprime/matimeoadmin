@@ -96,20 +96,20 @@ body {
 <body class="bg-gray-900 flex flex-col h-screen">
 
 <header class="hidden md:flex top-nav-desktop w-full fixed top-0 z-50 justify-between items-center px-6">
-  <div class="p-4"><h1 class="text-2xl font-bold text-gray-900">MaTimeo Admin</h1></div>
-  <nav class="flex space-x-2 h-full">
-    <button id="showDashboard" class="nav-item-desktop active">Dashboard</button>
-    <button id="showSales" class="nav-item-desktop">Sales</button>
-    <button id="showInventory" class="nav-item-desktop">Inventory</button>
-    <button id="showExpenses" class="nav-item-desktop">Expenses</button>
-    <button id="showReports" class="nav-item-desktop">Reports</button>
-    <button id="showContacts" class="nav-item-desktop">Contacts</button>
-  </nav>
+  <div class="p-4"><h1 class="text-2xl font-bold text-gray-900">MaTimeo Admin</h1></div>
+  <nav class="flex space-x-2 h-full">
+    <button id="showDashboard" class="nav-item-desktop active">Dashboard</button>
+    <button id="showSales" class="nav-item-desktop">Sales</button>
+    <button id="showInventory" class="nav-item-desktop">Inventory</button>
+    <button id="showExpenses" class="nav-item-desktop">Expenses</button>
+    <button id="showReports" class="nav-item-desktop">Reports</button>
+    <button id="showContacts" class="nav-item-desktop">Contacts</button>
+  </nav>
 </header>
 
 <main class="flex-1 flex flex-col overflow-y-auto p-4 main-content-area">
-    <section id="dashboardSection">
-    <h2 class="text-xl font-semibold mb-5">Dashboard Overview</h2>
+    <section id="dashboardSection">
+    <h2 class="text-xl font-semibold mb-5">Dashboard Overview</h2>
     
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
         
@@ -169,20 +169,20 @@ body {
             </section>
         </div>
     </div>
-  </section>
+  </section>
 
-    <section id="salesSection" class="hidden">
-    <h2 class="text-xl font-semibold mb-3">Sales & Transactions</h2>
+    <section id="salesSection" class="hidden">
+    <h2 class="text-xl font-semibold mb-3">Sales & Transactions</h2>
     <button id="addSaleBtnSection" class="bg-yellow-400 px-4 py-2 rounded-lg shadow font-medium hover:bg-yellow-500 transition mb-4 flex items-center">
         <span class="text-lg mr-2">⬆️</span> Record New Sale
     </button>
     <div id="salesList" class="space-y-3">
         <p class="text-gray-500">Loading recent sales...</p>
     </div>
-  </section>
+  </section>
 
-    <section id="inventorySection" class="hidden">
-    <h2 class="text-xl font-semibold mb-3">Inventory</h2>
+    <section id="inventorySection" class="hidden">
+    <h2 class="text-xl font-semibold mb-3">Inventory</h2>
     <button id="addInventoryBtn" class="bg-yellow-400 px-4 py-2 rounded mb-4 hover:bg-yellow-500 transition">Add/Update Product</button>
     
     <div class="hidden md:block overflow-x-auto">
@@ -204,27 +204,27 @@ body {
     <div id="inventoryListMobile" class="md:hidden space-y-3">
         <p class="text-gray-500">Loading inventory...</p>
     </div>
-  </section>
+  </section>
 
-    <section id="expensesSection" class="hidden">
-    <h2 class="text-xl font-semibold mb-3">Expenses Log</h2>
+    <section id="expensesSection" class="hidden">
+    <h2 class="text-xl font-semibold mb-3">Expenses Log</h2>
     <button id="addExpenseBtnSection" class="bg-yellow-400 px-4 py-2 rounded-lg shadow font-medium hover:bg-yellow-500 transition mb-4 flex items-center">
         <span class="text-lg mr-2">⬇️</span> Record New Expense
     </button>
     <div id="expensesList" class="space-y-3">
         <p class="text-gray-500">Loading recent expenses...</p>
     </div>
-  </section>
+  </section>
 
-    <section id="reportsSection" class="hidden">
-    <h2 class="text-xl font-semibold mb-3">Reports</h2>
+    <section id="reportsSection" class="hidden">
+    <h2 class="text-xl font-semibold mb-3">Reports</h2>
     <div class="bg-white p-4 rounded-lg shadow-md">
         <p class="text-gray-700">Detailed financial reports and summaries will appear here once implemented.</p>
     </div>
-  </section>
+  </section>
 
-    <section id="contactsSection" class="hidden">
-    <h2 class="text-xl font-semibold mb-3">Contacts (Customers & Suppliers)</h2>
+    <section id="contactsSection" class="hidden">
+    <h2 class="text-xl font-semibold mb-3">Contacts (Customers & Suppliers)</h2>
     <button id="addContactBtnSection" class="bg-yellow-400 px-4 py-2 rounded mb-4 hover:bg-yellow-500 transition">Add Contact</button>
     
     <div class="hidden md:block overflow-x-auto">
@@ -245,15 +245,15 @@ body {
     <div id="contactsListMobile" class="md:hidden space-y-3">
         <p class="text-gray-500">Loading contacts...</p>
     </div>
-  </section>
+  </section>
 </main>
 
 <nav class="fixed bottom-0 left-0 w-full md:hidden bottom-nav flex justify-around items-center h-16 shadow-lg z-40">
-  <button id="navDashboard" class="bottom-nav-item active"><span>🏠</span><span>Dashboard</span></button>
-  <button id="navSales" class="bottom-nav-item"><span>📈</span><span>Sales</span></button>
-  <button id="navInventory" class="bottom-nav-item"><span>📦</span><span>Inventory</span></button>
-  <button id="navExpenses" class="bottom-nav-item"><span>💸</span><span>Expenses</span></button>
-  <button id="navReports" class="bottom-nav-item"><span>📄</span><span>Reports</span></button>
+  <button id="navDashboard" class="bottom-nav-item active"><span>🏠</span><span>Dashboard</span></button>
+  <button id="navSales" class="bottom-nav-item"><span>📈</span><span>Sales</span></button>
+  <button id="navInventory" class="bottom-nav-item"><span>📦</span><span>Inventory</span></button>
+  <button id="navExpenses" class="bottom-nav-item"><span>💸</span><span>Expenses</span></button>
+  <button id="navReports" class="bottom-nav-item"><span>📄</span><span>Reports</span></button>
 </nav>
 
 <div id="modal"><div class="modal-content"><h3 id="modalTitle" class="text-lg font-semibold mb-4"></h3><form id="modalForm"></form>
@@ -312,7 +312,7 @@ function showSection(name) {
     hideAllSections();
     const sectionElement = sections[name];
     if (sectionElement) {
-        sectionElement.style.display = 'block'; 
+[O        sectionElement.style.display = 'block'; 
     }
     
     // Set active styles for desktop
@@ -440,86 +440,80 @@ async function deleteDocument(collectionName, docId) {
 
 // --- Data Input Functions ---
 
-// 1. Add Sale (Responsive & Fully Functional)
+// 1. Add Sale 
 const addSaleHandler = () => {
   if (productList.length === 0) {
     alert("No products available. Please add a product first via Inventory.");
     return;
   }
-
-  // Prepare product options dynamically
+  
+  // Use Retail Price as default calculation value
   const productOptions = productList.map(p => ({
-    value: p.id,
-    text: `${p.name} (Retail: ₵${p.retailPrice || 0} | Wholesale: ₵${p.wholesalePrice || 0})`
+    value: p.id, 
+    text: `${p.name} (Retail: ₵${p.retailPrice || p.price})`
   }));
   productOptions.unshift({ value: '', text: '--- Select Product ---' });
 
+  // Add an option to select the price type (Retail/Wholesale)
   const priceTypeOptions = [
     { value: 'retail', text: 'Retail Price' },
     { value: 'wholesale', text: 'Wholesale Price' }
   ];
 
   openModal("Record New Sale", [
-    { id: "productID", placeholder: "Select Product", tag: "select", options: productOptions, required: true },
-    { id: "priceType", placeholder: "Price Type", tag: "select", options: priceTypeOptions, defaultValue: 'retail', required: true },
-    { id: "quantity", placeholder: "Quantity Sold", type: "number", required: true, defaultValue: 1 },
-    { id: "amount", placeholder: "Total Amount (₵) (Optional - Auto Calculated)", type: "number" }
-  ], async (vals, closeModal) => {
+    {id:"productID", placeholder:"Select Product", tag:"select", options: productOptions, required: true },
+    {id:"priceType", placeholder:"Price Type", tag:"select", options: priceTypeOptions, defaultValue: 'retail', required: true },
+    {id:"quantity", placeholder:"Quantity Sold", type:"number", required: true, defaultValue: 1}, 
+    {id:"amount", placeholder:"Total Amount (₵) (Optional - Calculated)", type:"number"}
+  ], async (vals) => {
     try {
-      const product = productList.find(p => p.id === vals.productID);
-      const quantity = parseInt(vals.quantity);
-      const priceType = vals.priceType;
+        const product = productList.find(p => p.id === vals.productID);
+        const quantity = parseInt(vals.quantity || 1);
+        const priceType = vals.priceType;
+        
+        if (!product || quantity <= 0) {
+            throw new Error("Invalid product selection or quantity.");
+        }
+        
+        // Determine the price based on selection
+        let unitPrice;
+        if (priceType === 'wholesale') {
+            unitPrice = product.wholesalePrice || product.retailPrice; 
+        } else { // Default to retail
+            unitPrice = product.retailPrice || product.price; 
+        }
 
-      if (!product) throw new Error("Please select a valid product.");
-      if (isNaN(quantity) || quantity <= 0) throw new Error("Quantity must be a positive number.");
+        if (!unitPrice) {
+             throw new Error("Product price information is missing. Check Inventory.");
+        }
 
-      // Determine price
-      const unitPrice = priceType === 'wholesale'
-        ? parseFloat(product.wholesalePrice || 0)
-        : parseFloat(product.retailPrice || 0);
+        const amount = parseFloat(vals.amount || (unitPrice * quantity));
 
-      if (unitPrice <= 0)
-        throw new Error(`Invalid ${priceType} price (₵${unitPrice}) for ${product.name}. Check inventory.`);
-
-      // Compute total amount
-      let amount = parseFloat(vals.amount);
-      if (isNaN(amount) || amount <= 0) amount = unitPrice * quantity;
-      if (amount <= 0) throw new Error("Calculated sale amount must be positive.");
-
-      // Firestore Transaction
-      await runTransaction(db, async (transaction) => {
-        const productRef = doc(db, "products", vals.productID);
-        const productDoc = await transaction.get(productRef);
-        if (!productDoc.exists()) throw new Error(`${product.name} no longer exists in the database.`);
-
-        const currentStock = productDoc.data().stock || 0;
-        const newStock = currentStock - quantity;
-        if (newStock < 0)
-          throw new Error(`Insufficient stock for ${product.name}. Available: ${currentStock}`);
-
-        // Update stock and record sale
-        transaction.update(productRef, { stock: newStock });
-        transaction.set(doc(collection(db, "sales")), {
-          productID: vals.productID,
-          product: product.name,
-          priceType,
-          unitPrice,
-          quantity,
-          amount: parseFloat(amount.toFixed(2)),
-          date: new Date()
+        await runTransaction(db, async (transaction) => {
+          const productRef = doc(db, "products", vals.productID);
+          const productDoc = await transaction.get(productRef);
+          if (!productDoc.exists()) throw new Error(`Product '${product.name}' does not exist!`);
+          
+          const newStock = productDoc.data().stock - quantity;
+          if (newStock < 0) throw new Error(`Insufficient stock for ${product.name}! Stock remaining: ${productDoc.data().stock}`);
+          
+          transaction.update(productRef, { stock: newStock });
+          
+          transaction.set(doc(collection(db, "sales")), { 
+             productID: vals.productID,
+             product: product.name,
+             amount: amount,
+             quantity: quantity,
+             priceType: priceType, 
+             unitPrice: unitPrice,
+             date: new Date()
+          });
         });
-      });
 
-      // Refresh UI
-      if (sections.sales.style.display === 'block') loadSalesList();
-      if (sections.inventory.style.display === 'block') loadInventory();
-
-      alert(`✅ Sale for ${product.name} recorded successfully.`);
-      closeModal(); // ✅ Close modal after success
-
-    } catch (e) {
-      console.error("Error adding sale:", e);
-      alert(`⚠️ ${e.message || "An error occurred while saving the sale."}`);
+        if (sections.sales.style.display === 'block') loadSalesList();
+    } catch(e) { 
+        console.error("Error adding sale or updating stock: ", e); 
+        throw new Error(`Error processing sale. Details: ${e.message || e}`); 
     }
   });
 };
@@ -561,145 +555,26 @@ const addExpenseHandler = () => openModal("Record New Expense", [
 document.getElementById("addExpenseBtn").addEventListener("click", addExpenseHandler);
 document.getElementById("addExpenseBtnSection").addEventListener("click", addExpenseHandler);
 
-// ==========================
-//  INVENTORY ADD/UPDATE PRODUCT HANDLER
-// ==========================
-
-// Ensure the modal system exists
-function openModal(title, fields, onSubmit) {
-  const modal = document.getElementById("modal");
-  const modalTitle = document.getElementById("modalTitle");
-  const modalForm = document.getElementById("modalForm");
-  const submitBtn = document.getElementById("submitModal");
-  const closeBtn = document.getElementById("closeModal");
-
-  modalTitle.textContent = title;
-  modalForm.innerHTML = "";
-
-  // Build fields dynamically
-  fields.forEach(f => {
-    const wrapper = document.createElement("div");
-    wrapper.className = "mb-2";
-    let input;
-
-    if (f.type === "select") {
-      input = document.createElement("select");
-      (f.options || []).forEach(opt => {
-        const option = document.createElement("option");
-        option.value = opt;
-        option.textContent = opt;
-        input.appendChild(option);
-      });
-    } else {
-      input = document.createElement("input");
-      input.type = f.type || "text";
-      input.placeholder = f.placeholder || "";
-      if (f.defaultValue !== undefined) input.value = f.defaultValue;
+// 3. Add/Update Product (Inventory)
+const addUpdateProductHandler = () => openModal("Add/Update Product", [
+  {id:"productName", placeholder:"Product Name", required: true},
+  {id:"retailPrice", placeholder:"Retail Price (₵)", type:"number", required: true},
+  {id:"wholesalePrice", placeholder:"Wholesale Price (₵)", type:"number", required: true},
+  {id:"stock", placeholder:"Current Stock Quantity", type:"number", required: true},
+  {id:"alertThreshold", placeholder:"Low Stock Threshold", type:"number", required: true, defaultValue: 10}
+], async (vals) => {
+    if(vals.productName) {
+        await addDoc(collection(db, "products"), {
+            name: vals.productName,
+            retailPrice: parseFloat(vals.retailPrice || 0),
+            wholesalePrice: parseFloat(vals.wholesalePrice || 0),
+            stock: parseInt(vals.stock || 0),
+            alertThreshold: parseInt(vals.alertThreshold || 10),
+            dateAdded: new Date()
+        });
+        loadInventory();
     }
-
-    input.id = f.id;
-    input.className = "w-full border border-gray-300 rounded p-2 focus:ring-2 focus:ring-yellow-400";
-    if (f.required) input.required = true;
-    wrapper.appendChild(input);
-    modalForm.appendChild(wrapper);
-  });
-
-  // Show modal
-  modal.classList.remove("hidden");
-  modal.style.display = "flex";
-
-  // Handle submit
-  submitBtn.onclick = async (e) => {
-    e.preventDefault();
-    const vals = {};
-    fields.forEach(f => vals[f.id] = document.getElementById(f.id).value.trim());
-
-    try {
-      await onSubmit(vals);
-      alert("✅ Successfully submitted!");
-      modal.classList.add("hidden");
-      modal.style.display = "none";
-    } catch (err) {
-      console.error(err);
-      alert("❌ " + err.message);
-    }
-  };
-
-  // Close modal
-  closeBtn.onclick = () => {
-    modal.classList.add("hidden");
-    modal.style.display = "none";
-  };
-}
-
-// ==========================
-//  ADD/UPDATE PRODUCT LOGIC
-// ==========================
-
-const addUpdateProductHandler = () =>
-  openModal("Add/Update Product", [
-    { id: "productName", placeholder: "Product Name", required: true },
-    { id: "retailPrice", placeholder: "Retail Price (₵)", type: "number", required: true },
-    { id: "wholesalePrice", placeholder: "Wholesale Price (₵)", type: "number", required: true },
-    { id: "stock", placeholder: "Current Stock Quantity", type: "number", required: true },
-    { id: "alertThreshold", placeholder: "Low Stock Threshold", type: "number", required: true, defaultValue: 10 }
-  ], async (vals) => {
-
-    const retailPrice = parseFloat(vals.retailPrice);
-    const wholesalePrice = parseFloat(vals.wholesalePrice);
-    const stock = parseInt(vals.stock);
-    const alertThreshold = parseInt(vals.alertThreshold);
-
-    // Validation
-    if (
-      vals.productName &&
-      !isNaN(retailPrice) && retailPrice >= 0 &&
-      !isNaN(wholesalePrice) && wholesalePrice >= 0 &&
-      !isNaN(stock) && stock >= 0 &&
-      !isNaN(alertThreshold) && alertThreshold >= 0
-    ) {
-      // Add to Firestore
-      await addDoc(collection(db, "products"), {
-        name: vals.productName,
-        retailPrice,
-        wholesalePrice,
-        stock,
-        alertThreshold,
-        dateAdded: new Date()
-      });
-
-      // Refresh inventory immediately
-      await loadInventory();
-    } else {
-      throw new Error("Please fill all fields correctly with valid non-negative numbers.");
-    }
-  });
-
-// Bind to inventory button
-document.getElementById("addInventoryBtn").onclick = addUpdateProductHandler;
-document.getElementById("quickAddProductBtn")?.addEventListener("click", addUpdateProductHandler);
-
-// ==========================
-//  LOAD INVENTORY TABLE
-// ==========================
-async function loadInventory() {
-  const table = document.getElementById("inventoryTable");
-  table.innerHTML = "";
-  const snapshot = await getDocs(collection(db, "products"));
-  snapshot.forEach(doc => {
-    const p = doc.data();
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td class="p-2">${p.name}</td>
-      <td class="p-2">₵${p.retailPrice.toFixed(2)}</td>
-      <td class="p-2">${p.stock}</td>
-      <td class="p-2">${p.alertThreshold}</td>
-    `;
-    if (p.stock <= p.alertThreshold) tr.classList.add("bg-red-100");
-    table.appendChild(tr);
-  });
-}
-
+});
 
 document.getElementById("addInventoryBtn").addEventListener("click", addUpdateProductHandler);
 
@@ -865,44 +740,10 @@ async function loadData(){
     document.getElementById("stockMobile").innerText = lowStockCount;
 
 
-    // 3. Add/Update Product (Inventory)
-const addUpdateProductHandler = () =>
-    openModal("Add/Update Product", [
-        { id: "productName", placeholder: "Product Name", required: true },
-        { id: "retailPrice", placeholder: "Retail Price (₵)", type: "number", required: true },
-        { id: "wholesalePrice", placeholder: "Wholesale Price (₵)", type: "number", required: true },
-        { id: "stock", placeholder: "Current Stock Quantity", type: "number", required: true },
-        { id: "alertThreshold", placeholder: "Low Stock Threshold", type: "number", required: true, defaultValue: 10 }
-    ], async (vals) => {
-        // Robust Validation Check for Inventory
-        const retailPrice = parseFloat(vals.retailPrice);
-        const wholesalePrice = parseFloat(vals.wholesalePrice);
-        const stock = parseInt(vals.stock);
-        const alertThreshold = parseInt(vals.alertThreshold);
+    // 3. Prepare Top Products List & Chart Data
+    const top = Object.entries(productTotals).sort((a,b) => b[1] - a[1]).slice(0, 5);
+    renderTopProductsList(top);
 
-        // Check for product name presence and valid non-negative numbers for all fields
-        if (
-            vals.productName && 
-            !isNaN(retailPrice) && retailPrice >= 0 &&
-            !isNaN(wholesalePrice) && wholesalePrice >= 0 &&
-            !isNaN(stock) && stock >= 0 &&
-            !isNaN(alertThreshold) && alertThreshold >= 0
-        ) {
-            await addDoc(collection(db, "products"), {
-                name: vals.productName,
-                retailPrice: retailPrice,
-                wholesalePrice: wholesalePrice,
-                stock: stock,
-                alertThreshold: alertThreshold,
-                dateAdded: new Date()
-            });
-            // Refresh Inventory list immediately
-            loadInventory();
-        } else {
-            // Throw explicit error if validation fails
-            throw new Error("Please ensure the Product Name is filled and all price/quantity fields contain valid non-negative numbers.");
-        }
-    });
 
     // 4. Prepare Chart Data
     const sortedDates = Object.keys(dailySales).sort();
@@ -1166,4 +1007,3 @@ loadData();
 </script>
 </body>
 </html>
-
